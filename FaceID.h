@@ -102,7 +102,7 @@ typedef struct {
 		|***|	|
 		---------
 */
-
+#ifdef TRAIN
 void GetSamples();//读入样本图
 void Train();//训练
 Key_Value* CalFeatureValue(Feature& feature);
@@ -112,10 +112,13 @@ ostream& operator<<(ostream& os, Feature& feature);
 ofstream& operator<<(ofstream& fout, Feature& feature);
 ifstream& operator>>(ifstream& fin, Feature& feature);
 void CalFeatureMinErrorRate();
-Feature& StoreClassifier(ofstream& fout,int& curWeakClassifierNum,int stage);
+Feature& StoreClassifier(ofstream& fout, int& curWeakClassifierNum, int stage);
 void UpdateSampleWeight(Feature& bestFeature);
 void InitialSomeVariable();
 void DrawRectangle(Feature& feature, Sample& image);
+
+#endif // TRAIN
+
 
 #ifdef USE
 void LoadClassifier();
