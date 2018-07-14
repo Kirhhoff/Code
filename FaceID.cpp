@@ -296,6 +296,24 @@ void UpdateSampleWeight(Feature& bestFeature) {
 	}
 	delete[] keyValues;
 }
+
+#endif // TRAIN
+#ifdef USE
+void LoadClassifier() {
+	ifstream fin(classifierPathName.c_str());
+	double sum = 0;
+	for (int i = 0; i < MAX_WEAK_CLASSIFIER_NUM_PER_HARD; i++) {
+		fin >> weakFeatures[i];
+		sum += (weakFactors[i] = log((1 - weakFeatures[i].eRate) / weakFeatures[i].eRate) / 2);
+	}
+	for (int i = 0; i < MAX_WEAK_CLASSIFIER_NUM_PER_HARD; i++)
+		weakFactors[i] = weakFactors[i] / sum;
+}
+Sample* LoadAImage(string imagePath) {
+	Sample* sample = new Sample;
+	sample->img = imread(imagePath, 0);
+	return sample;
+}
 void DrawRectangle(Feature &feature, Sample &image) {
 	switch (feature.model) {
 	case(0): {
@@ -324,19 +342,26 @@ void DrawRectangle(Feature &feature, Sample &image) {
 	imwrite("drawnimage/" + to_string(name) + ".jpg", image.img);
 	name += 1;
 }
-
-#endif // TRAIN
-#ifdef USE
-void LoadClassifier() {
-	ifstream fin(classifierPathName.c_str());
-	double sum = 0;
-	for (int i = 0; i < MAX_WEAK_CLASSIFIER_NUM_PER_HARD; i++) {
-		fin >> weakFeatures[i];
-		sum += (weakFactors[i] = log((1 - weakFeatures[i].eRate) / weakFeatures[i].eRate) / 2);
-	}
-	for (int i = 0; i < MAX_WEAK_CLASSIFIER_NUM_PER_HARD; i++)
-		weakFactors[i] = weakFactors[i] / sum;
+void ExpressNose(Sample* sample) {
+	int times = 5;
+	int NOSE = 12;
+	int X = (weakFeatures[NOSE].X + weakFeatures[NOSE].factor)*times;
+	int Y = weakFeatures[NOSE].Y*times;
+	int** Scale = new int*[weakFeatures[NOSE].factor*times];
+	for (int i = 0; i < weakFeatures[NOSE].factor*times; i++)
+		Scale[i] = new int[weakFeatures[NOSE].factor*times];
+	for (int i = 0; i < weakFeatures[NOSE].factor*times; i++)
+		for (int j = 0; j < weakFeatures[NOSE].factor*times; j++)
+			Scale[i][j] = sample->img.at<uchar>(X + i, Y + j);
+	for (int i = 0; i < weakFeatures[NOSE].factor*times; i++)
+		for (int j = 0; j < weakFeatures[NOSE].factor*times; j++)
+			sample->img.at<uchar>(X + i, Y + j) = Scale[weakFeatures[NOSE].factor*times - i - 1][weakFeatures[NOSE].factor*times - j - 1];
+	namedWindow("fuck");
+	imshow("fuck", sample->img);
+	waitKey(0);
+	cin.get();
 }
+
 
 #endif // USE
 

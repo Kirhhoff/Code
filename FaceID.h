@@ -17,6 +17,8 @@ using namespace std;
 using namespace cv;
 #define Version_20
 #define USE
+#define TRAIN
+
 
 #ifdef Version_20
 #define MAP_ROWS 20
@@ -115,14 +117,18 @@ void CalFeatureMinErrorRate();
 Feature& StoreClassifier(ofstream& fout, int& curWeakClassifierNum, int stage);
 void UpdateSampleWeight(Feature& bestFeature);
 void InitialSomeVariable();
-void DrawRectangle(Feature& feature, Sample& image);
 
 #endif // TRAIN
 
 
 #ifdef USE
 void LoadClassifier();
-
+Sample* LoadAImage(string imagePath);
+void DrawRectangle(Feature& feature, Sample& image);
+void ExpressEar(Sample* sample);
+void ExpressEye(Sample* sample);
+void ExpressMouse(Sample* sample);
+void ExpressNose(Sample* sample);
 #endif // 
 
 
