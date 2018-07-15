@@ -1,29 +1,6 @@
 #include"FaceID.h"
 #include"Global.h"
-ostream& operator<<(ostream& os, Feature& feature) {
-	os << "模型: " << feature.model << endl
-		<< "放大倍数: " << feature.factor << endl
-		<< "左上角位置: " << "(" << feature.X << "," << feature.Y << ")" << endl
-		<< "错误率: " << feature.eRate << endl
-		<< "权重系数: " << log((1 - feature.eRate) / feature.eRate) / 2
-		<< "阈值：" << feature.threshold << endl;
-	//<< "符号：" << feature.p << endl
-	//<< "编号：" << feature.Number << endl;
-	return os;
-}
 #ifdef TRAIN
-ofstream& operator<<(ofstream& fout, Feature& feature) {
-	fout << left << setw(3) << feature.model
-		<< setw(3) << feature.factor
-		<< setw(5) << feature.X
-		<< setw(5) << feature.Y
-		<< setw(12) << feature.eRate
-		<< setw(12) << log((1 - feature.eRate) / feature.eRate) / 2
-		<< setw(5) << feature.threshold
-		<< setw(3) << feature.p
-		<< endl;
-	return fout;
-}
 void CalIntegralDiagrams() {
 	for (int num = 0; num < SAMPLE_NUM; num++) {
 		//samples[num].integralDiagram = samples[num].img.clone();
@@ -232,6 +209,43 @@ Key_Value* CalFeatureValue(Feature& feature) {
 		break;
 	}
 	return keyValues;
+}
+ostream& operator<<(ostream& os, Feature& feature) {
+	os << "模型: " << feature.model << endl
+		<< "放大倍数: " << feature.factor << endl
+		<< "左上角位置: " << "(" << feature.X << "," << feature.Y << ")" << endl
+		<< "错误率: " << feature.eRate << endl
+		<< "权重系数: " << log((1 - feature.eRate) / feature.eRate) / 2
+		<< "阈值：" << feature.threshold << endl;
+	//<< "符号：" << feature.p << endl
+	//<< "编号：" << feature.Number << endl;
+	return os;
+}
+ofstream& operator<<(ofstream& fout, Feature& feature) {
+	fout << left << setw(3) << feature.model
+		<< setw(3) << feature.factor
+		<< setw(5) << feature.X
+		<< setw(5) << feature.Y
+		<< setw(12) << feature.eRate
+		<< setw(12) << log((1 - feature.eRate) / feature.eRate) / 2
+		<< setw(5) << feature.threshold
+		<< setw(3) << feature.p
+		<< endl;
+	return fout;
+}
+ifstream& operator>>(ifstream& fin, Feature& feature) {
+	double tmp;
+	fin >> feature.model
+		>> feature.factor
+		>> feature.X
+		>> feature.Y
+		>> feature.eRate
+		>> tmp
+		>> feature.threshold
+		>> feature.p;
+	feature.xSize = s[feature.model] * feature.factor;
+	feature.ySize = t[feature.model] * feature.factor;
+	return fin;
 }
 Feature& StoreClassifier(ofstream& fout, int& curWeakClassifierNum, int stage) {
 	int index;
