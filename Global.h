@@ -14,17 +14,20 @@ extern int featureNum;
 extern ER_Number* ERtable;
 extern double curTP;
 extern double curTN;
+extern string posPathName;
+extern string negPathName;
 #endif // TRAIN
 #ifdef USE
 extern double weakFactors[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
 extern Feature weakFeatures[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
+extern Feature sortedWeakFeatures[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
 extern int sampleFeatureValue[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
 extern bool predictResult[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
 extern double P;
+extern int name;
+extern string rotatedImagePathName;
 #endif // USE
 
-extern string posPathName;
-extern string negPathName;
 
 
 

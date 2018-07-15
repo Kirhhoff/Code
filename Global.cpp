@@ -17,9 +17,12 @@ double curTN=(double)__TN / SAMPLE_NUM;
 #ifdef USE
 double weakFactors[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
 Feature weakFeatures[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
+Feature sortedWeakFeatures[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
 int sampleFeatureValue[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
 bool predictResult[MAX_WEAK_CLASSIFIER_NUM_PER_HARD];
 double P=0;
+int name = 0;
+string rotatedImagePathName;
 #endif // USE
 
 

@@ -1,5 +1,16 @@
 #include"FaceID.h"
 #include"Global.h"
+ostream& operator<<(ostream& os, Feature& feature) {
+	os << "模型: " << feature.model << endl
+		<< "放大倍数: " << feature.factor << endl
+		<< "左上角位置: " << "(" << feature.X << "," << feature.Y << ")" << endl
+		<< "错误率: " << feature.eRate << endl
+		<< "权重系数: " << log((1 - feature.eRate) / feature.eRate) / 2
+		<< "阈值：" << feature.threshold << endl;
+	//<< "符号：" << feature.p << endl
+	//<< "编号：" << feature.Number << endl;
+	return os;
+}
 #ifdef TRAIN
 void CalIntegralDiagrams() {
 	for (int num = 0; num < SAMPLE_NUM; num++) {
@@ -84,6 +95,20 @@ void CalFeatureMinErrorRate() {
 				Features[fIndex].threshold = keyValues[sIndex].value;
 			}
 		}
+		if(Features[fIndex].p>0)
+			for (int sIndex = 0; sIndex < SAMPLE_NUM; sIndex++) {
+				if (keyValues[sIndex].key) {
+					Features[fIndex].maxSampleValue = keyValues[sIndex].value;
+					break;
+				}
+			}
+		else
+			for (int sIndex = SAMPLE_NUM-1; sIndex >= 0; sIndex--)
+				if (keyValues[sIndex].key) {
+					Features[fIndex].maxSampleValue = keyValues[sIndex].value;
+					break;
+				}
+
 		ERtable[fIndex].errorRate = Features[fIndex].eRate = minWrong;
 		ERtable[fIndex].Number = fIndex;
 		delete[] keyValues;
@@ -210,17 +235,6 @@ Key_Value* CalFeatureValue(Feature& feature) {
 	}
 	return keyValues;
 }
-ostream& operator<<(ostream& os, Feature& feature) {
-	os << "模型: " << feature.model << endl
-		<< "放大倍数: " << feature.factor << endl
-		<< "左上角位置: " << "(" << feature.X << "," << feature.Y << ")" << endl
-		<< "错误率: " << feature.eRate << endl
-		<< "权重系数: " << log((1 - feature.eRate) / feature.eRate) / 2
-		<< "阈值：" << feature.threshold << endl;
-	//<< "符号：" << feature.p << endl
-	//<< "编号：" << feature.Number << endl;
-	return os;
-}
 ofstream& operator<<(ofstream& fout, Feature& feature) {
 	fout << left << setw(3) << feature.model
 		<< setw(3) << feature.factor
@@ -230,22 +244,9 @@ ofstream& operator<<(ofstream& fout, Feature& feature) {
 		<< setw(12) << log((1 - feature.eRate) / feature.eRate) / 2
 		<< setw(5) << feature.threshold
 		<< setw(3) << feature.p
+		<< setw(5)<<feature.maxSampleValue
 		<< endl;
 	return fout;
-}
-ifstream& operator>>(ifstream& fin, Feature& feature) {
-	double tmp;
-	fin >> feature.model
-		>> feature.factor
-		>> feature.X
-		>> feature.Y
-		>> feature.eRate
-		>> tmp
-		>> feature.threshold
-		>> feature.p;
-	feature.xSize = s[feature.model] * feature.factor;
-	feature.ySize = t[feature.model] * feature.factor;
-	return fin;
 }
 Feature& StoreClassifier(ofstream& fout, int& curWeakClassifierNum, int stage) {
 	int index;
@@ -300,14 +301,16 @@ ifstream& operator>>(ifstream& fin, Feature& feature) {
 		>> feature.eRate
 		>> tmp
 		>> feature.threshold
-		>> feature.p;
+		>> feature.p
+		>> feature.maxSampleValue;
 	feature.xSize = s[feature.model] * feature.factor;
 	feature.ySize = t[feature.model] * feature.factor;
 	return fin;
 }
 Sample* LoadAImage(string imagePathName) {
+	Mat Tmp = imread(imagePathName);
 	Sample* sample = new Sample;
-	sample->img = imread(imagePathName,0);
+	resize(Tmp, sample->img, Size((Tmp.rows / MAP_ROWS)*MAP_ROWS, (Tmp.cols / MAP_COLS)*MAP_COLS));
 	return sample;
 }
 void DrawRectangle(Feature &feature, Sample &sample) {
@@ -342,6 +345,9 @@ void DrawRectangle(Feature &feature, Sample &sample) {
 	name += 1;
 }
 void Rotate(Feature& feature, Sample& sample) {
+	if (_access(rotatedImagePathName.c_str(), 0) != -1)
+		_rmdir(rotatedImagePathName.c_str());
+	_mkdir(rotatedImagePathName.c_str());
 	switch (feature.model)
 	{
 	case 0:Rotate0(feature, sample);
@@ -379,9 +385,7 @@ void Rotate0(Feature feature, Sample &_sample)
 	Rotateimg;
 	warpAffine(ROI, Rotateimg, Rotatemat, ROI.size());
 	Rotateimg.copyTo(ROI);//旋转第二部分
-	static int name = 1;
-	imwrite("Rotateimage/model0" + to_string(name) + ".jpg", sample.img);
-	name += 1;
+	imwrite(rotatedImagePathName+"/" + to_string(name++) + ".jpg", sample.img);
 }
 void Rotate1(Feature feature, Sample &_sample){
 	Sample sample;
@@ -403,9 +407,7 @@ void Rotate1(Feature feature, Sample &_sample){
 	Rotateimg;
 	warpAffine(ROI, Rotateimg, Rotatemat, ROI.size());
 	Rotateimg.copyTo(ROI);//旋转第二部分
-	static int name = 101;
-	imwrite("Rotateimage/model1" + to_string(name) + ".jpg", sample.img);
-	name += 1;
+	imwrite(rotatedImagePathName + "/" + to_string(name++) + ".jpg", sample.img);
 }
 void Rotate2(Feature feature, Sample &_sample){
 	Sample sample;
@@ -433,9 +435,7 @@ void Rotate2(Feature feature, Sample &_sample){
 	Rotateimg;
 	warpAffine(ROI, Rotateimg, Rotatemat, ROI.size());
 	Rotateimg.copyTo(ROI);//旋转第三部分
-	static int name = 201;
-	imwrite("Rotateimage/model2" + to_string(name) + ".jpg", sample.img);
-	name += 1;
+	imwrite(rotatedImagePathName + "/" + to_string(name++) + ".jpg", sample.img);
 }
 void Rotate3(Feature feature, Sample &_sample){
 	Sample sample;
@@ -463,9 +463,7 @@ void Rotate3(Feature feature, Sample &_sample){
 	Rotateimg;
 	warpAffine(ROI, Rotateimg, Rotatemat, ROI.size());
 	Rotateimg.copyTo(ROI);//旋转第三部分
-	static int name = 301;
-	imwrite("Rotateimage/model3" + to_string(name) + ".jpg", sample.img);
-	name += 1;
+	imwrite(rotatedImagePathName + "/" + to_string(name++) + ".jpg", sample.img);
 }
 void Rotate4(Feature feature, Sample &_sample){
 	Sample sample;
@@ -499,13 +497,13 @@ void Rotate4(Feature feature, Sample &_sample){
 	Rotateimg;
 	warpAffine(ROI, Rotateimg, Rotatemat, ROI.size());
 	Rotateimg.copyTo(ROI);//旋转第四部分
-	static int name = 401;
-	imwrite("Rotateimage/model4" + to_string(name) + ".jpg", sample.img);
-	name += 1;
+	imwrite(rotatedImagePathName + "/" + to_string(name++) + ".jpg", sample.img);
 }
 Sample* Compress(Sample *origin) {
+	Mat Tmp = origin->img.clone();
+	cvtColor(Tmp, Tmp, COLOR_BGR2GRAY);
 	Sample *less = new Sample;
-	resize(origin->img, less->img, Size(20, 20));
+	resize(Tmp, less->img, Size(20, 20));
 	return less;
 }
 void LoadClassifier() {
@@ -612,7 +610,7 @@ void CalSampleAllFeatureValues(Sample* sample) {
 }
 void PredictResult() {
 	for (int featureNO = 0; featureNO < MAX_WEAK_CLASSIFIER_NUM_PER_HARD; featureNO++)
-		if (predictResult[featureNO] = (sampleFeatureValue[featureNO] * weakFeatures[featureNO].p >= weakFeatures[featureNO].threshold*weakFeatures[featureNO].p))
+		if (predictResult[featureNO] = ((sampleFeatureValue[featureNO] * weakFeatures[featureNO].p >= weakFeatures[featureNO].threshold*weakFeatures[featureNO].p)&& (sampleFeatureValue[featureNO] * weakFeatures[featureNO].p <= weakFeatures[featureNO].maxSampleValue*weakFeatures[featureNO].p)))
 			P += weakFactors[featureNO];
 }
 #endif // USE

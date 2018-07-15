@@ -13,6 +13,8 @@
 #include<stdlib.h> 
 #include<string>
 #include<iomanip>
+#include<direct.h>
+#include<io.h>
 using namespace std;
 using namespace cv;
 #define Version_20
@@ -33,6 +35,7 @@ using namespace cv;
 #define FEATURE_NUM 1000000
 #define __TP 1000
 #define __TN 1000
+#define FINAL_FEATURE_NUM 4
 
 typedef struct {
 	//以下是不随迭代变化的量
@@ -47,7 +50,9 @@ typedef struct {
 	//以下是在每次迭代中值不同的量
 	double eRate;//该特征在阈值下的错误率
 	int threshold;//该特征的当前阈值
+	int maxSampleValue;//所有样本中对该特征的最大特征值
 	int p;//指示不等号的方向
+	double rate;
 } Feature;
 typedef struct {
 	Mat img;
@@ -115,8 +120,6 @@ void UpdateSampleWeight(Feature& bestFeature);
 void InitialSomeVariable();
 ofstream& operator<<(ofstream& fout, Feature& feature);
 #endif // TRAIN
-
-
 #ifdef USE
 void DrawRectangle(Feature& feature, Sample& image);
 void Rotate(Feature& feature, Sample& sample);
