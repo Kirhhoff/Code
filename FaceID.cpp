@@ -320,7 +320,7 @@ void DrawRectangle(Feature &feature, Sample &sample) {
 	switch (feature.model) {
 	case(0): {
 		for (int count = 1; count <= 2; count++)
-			rectangle(image.img, Rect(feature.X, feature.Y, feature.xSize, feature.factor * count), Scalar(0, 0, 0), 1, 1, 0);
+			rectangle(image.img, Rect(featureMO.X, feature.Y, feature.xSize, feature.factor * count), Scalar(0, 0, 0), 1, 1, 0);
 		break; }
 	case(1): {
 		for (int count = 1; count <= 2; count++)

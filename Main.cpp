@@ -18,32 +18,26 @@ int main(int argc,char** argv) {
 	Sample *initialSample, *compressedSample;
 	LoadClassifier();
 	for (int i = 1; i < argc; i++) {
-		cout << i << endl;
-		string imageName = argv[i];
-		rotatedImagePathName = to_string(i);
-		initialSample = LoadAImage(imageName.c_str());
-		compressedSample = Compress(initialSample);
-		CalOneSampleIntegralDiagram(compressedSample);
-		CalSampleAllFeatureValues(compressedSample);
-		PredictResult();
+		string imageName = argv[i];//获取文件路径名
+		rotatedImagePathName = "Code/"+to_string(i);//生成输出的翻转文件路径名
+		initialSample = LoadAImage(imageName.c_str());//读入图片
+		compressedSample = Compress(initialSample);//进行压缩和灰度转化
+		CalOneSampleIntegralDiagram(compressedSample);//计算图片的积分图
+		CalSampleAllFeatureValues(compressedSample);//计算图片的不同特征特征值
+		PredictResult();//进行预测
 		int NO = 0;
 		for (int i = 0; i < MAX_WEAK_CLASSIFIER_NUM_PER_HARD; i++)
-			if (predictResult[i]) {
-				//if (weakFeatures[i].model == 3) {
-					//cout << weakFeatures[i].threshold << " " << weakFeatures[i].p << " " << sampleFeatureValue[i] << " " << weakFeatures[i].maxSampleValue << endl;
-					//Rotate(weakFeatures[i], *initialSample);
-				//}
+			if (predictResult[i]) {//若这个弱分类器预测有人脸就把它记录下来
 				sortedWeakFeatures[NO] = weakFeatures[i];
 				sortedWeakFeatures[NO].rate = (double)(sampleFeatureValue[i] - weakFeatures[i].threshold) / (weakFeatures[i].maxSampleValue - weakFeatures[i].threshold);
 				NO++;
 			}
 		sort(sortedWeakFeatures, sortedWeakFeatures + NO, [](Feature f1, Feature f2) {return f1.rate > f2.rate; });
 		for (int i = 0; i < NO; i++)
-			Rotate(sortedWeakFeatures[i], *initialSample);
+			Rotate(sortedWeakFeatures[i], *initialSample);//根据各个分类器分别进行器官翻转
 		delete initialSample;
 		delete compressedSample;
 	}
-	cin.get();
 }
 #endif // USE
 
