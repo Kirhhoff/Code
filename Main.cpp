@@ -29,8 +29,10 @@ int main(int argc,char** argv) {
 		int NO = 0;
 		for (int i = 0; i < MAX_WEAK_CLASSIFIER_NUM_PER_HARD; i++)
 			if (predictResult[i]) {
-				if(weakFeatures[i].model==3)
-					cout << weakFeatures[i].threshold << " " << weakFeatures[i].p << " "<<sampleFeatureValue[i] << " " << weakFeatures[i].maxSampleValue << endl;
+				//if (weakFeatures[i].model == 3) {
+					//cout << weakFeatures[i].threshold << " " << weakFeatures[i].p << " " << sampleFeatureValue[i] << " " << weakFeatures[i].maxSampleValue << endl;
+					//Rotate(weakFeatures[i], *initialSample);
+				//}
 				sortedWeakFeatures[NO] = weakFeatures[i];
 				sortedWeakFeatures[NO].rate = (double)(sampleFeatureValue[i] - weakFeatures[i].threshold) / (weakFeatures[i].maxSampleValue - weakFeatures[i].threshold);
 				NO++;

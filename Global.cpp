@@ -1,5 +1,5 @@
 #include"FaceID.h"
-int weakClassifierNum[HARD_CLASSIFIER_STAGES] = { 30 };
+int weakClassifierNum[HARD_CLASSIFIER_STAGES] = { MAX_WEAK_CLASSIFIER_NUM_PER_HARD };
 int minSquare[MODEL_NUM] = { 3,3,4,4,5 };
 //int minSquare[MODEL_NUM] = {  };
 int s[MODEL_NUM] = { 1,2,1,3,2 };

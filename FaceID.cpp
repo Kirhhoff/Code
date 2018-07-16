@@ -242,7 +242,7 @@ ofstream& operator<<(ofstream& fout, Feature& feature) {
 		<< setw(5) << feature.Y
 		<< setw(12) << feature.eRate
 		<< setw(12) << log((1 - feature.eRate) / feature.eRate) / 2
-		<< setw(5) << feature.threshold
+		<< setw(6) << feature.threshold
 		<< setw(3) << feature.p
 		<< setw(5)<<feature.maxSampleValue
 		<< endl;
@@ -364,7 +364,7 @@ void Rotate(Feature& feature, Sample& sample) {
 		break;
 	}
 }
-void Rotate0(Feature feature, Sample &_sample)
+void Rotate0(Feature& feature, Sample &_sample)
 {
 	Sample sample;
 	sample.img = _sample.img.clone();
@@ -387,7 +387,7 @@ void Rotate0(Feature feature, Sample &_sample)
 	Rotateimg.copyTo(ROI);//旋转第二部分
 	imwrite(rotatedImagePathName+"/" + to_string(name++) + ".jpg", sample.img);
 }
-void Rotate1(Feature feature, Sample &_sample){
+void Rotate1(Feature& feature, Sample &_sample){
 	Sample sample;
 	sample.img = _sample.img.clone();
 	int times = (sample.img.rows / MAP_ROWS);//输出图：参数图
@@ -409,7 +409,7 @@ void Rotate1(Feature feature, Sample &_sample){
 	Rotateimg.copyTo(ROI);//旋转第二部分
 	imwrite(rotatedImagePathName + "/" + to_string(name++) + ".jpg", sample.img);
 }
-void Rotate2(Feature feature, Sample &_sample){
+void Rotate2(Feature& feature, Sample &_sample){
 	Sample sample;
 	sample.img = _sample.img.clone();
 	int times = (sample.img.rows / MAP_ROWS);//输出图：参数图
@@ -437,7 +437,7 @@ void Rotate2(Feature feature, Sample &_sample){
 	Rotateimg.copyTo(ROI);//旋转第三部分
 	imwrite(rotatedImagePathName + "/" + to_string(name++) + ".jpg", sample.img);
 }
-void Rotate3(Feature feature, Sample &_sample){
+void Rotate3(Feature& feature, Sample &_sample){
 	Sample sample;
 	sample.img = _sample.img.clone();
 	int times = (sample.img.rows / MAP_ROWS);//输出图：参数图
@@ -465,7 +465,7 @@ void Rotate3(Feature feature, Sample &_sample){
 	Rotateimg.copyTo(ROI);//旋转第三部分
 	imwrite(rotatedImagePathName + "/" + to_string(name++) + ".jpg", sample.img);
 }
-void Rotate4(Feature feature, Sample &_sample){
+void Rotate4(Feature& feature, Sample &_sample){
 	Sample sample;
 	sample.img = _sample.img.clone();
 	int times = (sample.img.rows / MAP_ROWS);//输出图：参数图
